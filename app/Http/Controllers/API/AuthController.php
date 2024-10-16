@@ -11,16 +11,26 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        // Validate incoming request data
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'date_of_birth' => 'nullable|date', // Validate date of birth
+            'phone_number' => 'nullable|string|max:15', // Validate phone number
+            'institution_code' => 'nullable|string|max:10', // Validate institution code
+            'guardian_email' => 'nullable|string|email|max:255', // Validate guardian email
         ]);
 
+        // Create the user with additional fields
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'date_of_birth' => $request->date_of_birth, // Store date of birth
+            'phone_number' => $request->phone_number, // Store phone number
+            'institution_code' => $request->institution_code, // Store institution code
+            'guardian_email' => $request->guardian_email, // Store guardian email
         ]);
 
         return response()->json(['user' => $user], 201);
@@ -28,24 +38,35 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
+        // Validasi data yang dikirim oleh pengguna
+        $loginData = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-            $token = $user->createToken('API Token')->plainTextToken;
+        // Mencari pengguna berdasarkan email
+        $user = User::where('email', $loginData['email'])->first();
 
-            return response()->json(['token' => $token]);
+        // Memeriksa apakah pengguna ada
+        if (!$user) {
+            return response(['message' => 'Invalid credentials'], 401);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        // Memeriksa apakah password yang diberikan cocok
+        if (!Hash::check($loginData['password'], $user->password)) {
+            return response(['message' => 'Invalid credentials'], 401);
+        }
+
+        // Membuat token untuk pengguna
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Mengembalikan data pengguna dan token
+        return response(['user' => $user, 'token' => $token], 200);
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        return response()->json(['message' => 'Successfully logged out']);
+        $request->user()->currentAccessToken()->delete();
+        return response(['message' => 'Logged out'], 200);
     }
 }
