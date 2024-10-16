@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
@@ -20,6 +21,7 @@ class AuthController extends Controller
             'phone_number' => 'nullable|string|max:15', // Validate phone number
             'institution_code' => 'nullable|string|max:10', // Validate institution code
             'guardian_email' => 'nullable|string|email|max:255', // Validate guardian email
+            'role' => 'required|in:admin,pelajar,guru', // Validate role
         ]);
 
         // Create the user with additional fields
@@ -31,6 +33,7 @@ class AuthController extends Controller
             'phone_number' => $request->phone_number, // Store phone number
             'institution_code' => $request->institution_code, // Store institution code
             'guardian_email' => $request->guardian_email, // Store guardian email
+            'role' => $request->role, // Store role
         ]);
 
         return response()->json(['user' => $user], 201);
@@ -60,7 +63,7 @@ class AuthController extends Controller
         // Membuat token untuk pengguna
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Mengembalikan data pengguna dan token
+        // Mengembalikan data pengguna dan token, termasuk role
         return response(['user' => $user, 'token' => $token], 200);
     }
 

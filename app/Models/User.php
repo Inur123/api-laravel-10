@@ -19,7 +19,8 @@ class User extends Authenticatable
         'date_of_birth',      // Added date of birth
         'phone_number',       // Added phone number
         'institution_code',   // Added institution code (optional)
-        'guardian_email',     // Added guardian email (optional)
+        'guardian_email',
+        'role',    // Added guardian email (optional)
     ];
 
     protected $hidden = [

@@ -12,8 +12,5 @@ use App\Http\Controllers\API\StatusController;
 
 // Default homepage
 Route::get('/', function () {
-    return view('welcome');
-});
-
-
-Route::get('/', [StatusController::class, 'welcome']);
+    return view('welcome'); // Pastikan Anda memiliki view welcome.blade.php
+})->name('welcome');

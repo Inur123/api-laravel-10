@@ -20,7 +20,8 @@ return new class extends Migration
             $table->date('date_of_birth')->nullable(); // Add date of birth
             $table->string('phone_number')->nullable(); // Add phone number
             $table->string('institution_code')->nullable(); // Add institution code (optional)
-            $table->string('guardian_email')->nullable(); // Add guardian email (optional)
+            $table->string('guardian_email')->nullable();
+            $table->enum('role', ['admin', 'pelajar', 'guru'])->default('pelajar');// Add guardian email
             $table->rememberToken();
             $table->timestamps();
         });

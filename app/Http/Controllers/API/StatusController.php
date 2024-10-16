@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class StatusController extends Controller
 {
-    public function index()
+    public function welcome()
     {
-        return view('welcome');
+        return response()->json(['message' => 'Welcome to the API!']);
     }
 }
