@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
@@ -13,45 +14,31 @@ use App\Http\Controllers\API\MenstrualCycleController;
 |--------------------------------------------------------------------------
 */
 
-// User route to get authenticated user details
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Apply the 'web' middleware to all routes to use session-based auth
+Route::middleware('web')->group(function () {
 
-// Menstrual Cycle routes
-Route::middleware('auth:sanctum')->put('menstrual-cycles/{id}', [MenstrualCycleController::class, 'update']);
-Route::middleware('auth:sanctum')->get('/menstrual-cycles', [MenstrualCycleController::class, 'index']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-Route::middleware('auth:sanctum')->post('/menstrual-cycle', [MenstrualCycleController::class, 'store']);
-Route::middleware('auth:sanctum')->post('/check-cycle', [MenstrualCycleController::class, 'checkCycle']);
-Route::get('/welcome', [StatusController::class, 'welcome']);
+    // User route to get authenticated user details (session-based)
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
-// Girly Pedia routes
+    // Authentication routes (session-based for login/logout)
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
+    // Menstrual Cycle routes
+    Route::put('menstrual-cycles/{id}', [MenstrualCycleController::class, 'update']);
+    Route::get('/menstrual-cycles', [MenstrualCycleController::class, 'index']);
+    Route::post('/menstrual-cycle', [MenstrualCycleController::class, 'store']);
+    Route::post('/check-cycle', [MenstrualCycleController::class, 'checkCycle']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/girly-pedia', [GirlyPediaController::class, 'index']);
-    Route::post('/girly-pedia', [GirlyPediaController::class, 'store']);
-    Route::get('/girly-pedia/{id}', [GirlyPediaController::class, 'show']);
-    Route::put('/girly-pedia/{id}', [GirlyPediaController::class, 'update']);
-    Route::delete('/girly-pedia/{id}', [GirlyPediaController::class, 'destroy']);
-});
+    // Welcome route
+    Route::get('/welcome', [StatusController::class, 'welcome']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Menampilkan semua podcast
-    Route::get('/podcasts', [PodcastController::class, 'index']);
+    // Girly Pedia routes using resource controller
+    Route::apiResource('/girly-pedia', GirlyPediaController::class);
 
-    // Menampilkan satu podcast berdasarkan ID
-    Route::get('/podcasts/{id}', [PodcastController::class, 'show']);
-
-    // Menambahkan podcast baru
-    Route::post('/podcasts', [PodcastController::class, 'store']);
-
-    // Memperbarui podcast berdasarkan ID
-    Route::put('/podcasts/{id}', [PodcastController::class, 'update']);
-
-    // Menghapus podcast berdasarkan ID
-    Route::delete('/podcasts/{id}', [PodcastController::class, 'destroy']);
+    // Podcast routes using resource controller
+    Route::apiResource('/podcasts', PodcastController::class);
 });
