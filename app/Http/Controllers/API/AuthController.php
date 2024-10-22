@@ -63,13 +63,13 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Clear the user session
-        $request->session()->forget('user');
+        // Menghapus semua token pengguna
+        $request->user()->tokens()->delete();
 
-        // Log out the user
-        Auth::logout();
+        // Menghapus session jika menggunakan session-based authentication
+        Auth::guard('web')->logout();
 
-        return response()->json(['message' => 'Logged out successfully'], 200);
+        return response()->json(['message' => 'Logged out successfully!'], 200);
     }
 
     public function getUser(Request $request)

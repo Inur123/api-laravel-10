@@ -14,18 +14,20 @@ use App\Http\Controllers\API\MenstrualCycleController;
 |--------------------------------------------------------------------------
 */
 
-// Apply the 'web' middleware to all routes to use session-based auth
+// Rute tanpa autentikasi (Login, Register, Logout)
 Route::middleware('web')->group(function () {
-
-    // User route to get authenticated user details (session-based)
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
 
     // Authentication routes (session-based for login/logout)
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+// Rute yang memerlukan autentikasi (user sudah login)
+Route::middleware(['web', 'auth:web'])->group(function () {
+
+    // User route to get authenticated user details (session-based)
+    Route::get('/user', [AuthController::class, 'getUser']);
 
     // Menstrual Cycle routes
     Route::put('menstrual-cycles/{id}', [MenstrualCycleController::class, 'update']);
