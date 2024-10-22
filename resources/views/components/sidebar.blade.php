@@ -1,10 +1,16 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="index.html">Stisla</a>
+            <a href="dashboard" class="d-flex align-items-center">
+                <img src="{{ asset('img/logo1.svg') }}" alt="Logo" style="width: 50px; height: auto;" class="sidebar-logo mr-2" />
+                ADMIN
+            </a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
-            <a href="index.html">St</a>
+            <a href="index.html" class="d-flex align-items-center">
+                <img src="{{ asset('img/logo1.svg') }}" alt="Logo" style="width: 50px; height: class="sidebar-logo" />
+
+            </a>
         </div>
         <ul class="sidebar-menu">
             <li class="menu-header">Dashboard</li>
