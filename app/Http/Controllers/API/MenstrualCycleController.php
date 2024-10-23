@@ -11,31 +11,45 @@ use Carbon\Carbon;
 class MenstrualCycleController extends Controller
 {
     public function store(Request $request)
-    {
-        // Validate the incoming request data
-        $request->validate([
-            'last_period_start' => 'required|date',
-            'last_period_finish' => 'required|date',
-        ]);
+{
+    // Validate the incoming request data
+    $request->validate([
+        'last_period_start' => 'required|date',
+        'last_period_finish' => 'required|date',
+    ]);
 
-        // Save the menstrual cycle data
-        $menstrualCycle = MenstrualCycle::create([
-            'user_id' => Auth::id(),
-            'last_period_start' => $request->last_period_start,
-            'last_period_finish' => $request->last_period_finish,
-            'is_completed' => false,
-        ]);
+    // Save the menstrual cycle data
+    $menstrualCycle = MenstrualCycle::create([
+        'user_id' => Auth::id(),
+        'last_period_start' => $request->last_period_start,
+        'last_period_finish' => $request->last_period_finish,
+        'is_completed' => false, // Default value set to false
+    ]);
 
-        return response()->json(['message' => 'Menstrual cycle data stored successfully!', 'data' => $menstrualCycle], 201);
-    }
+    return response()->json(['message' => 'Menstrual cycle data stored successfully!', 'data' => $menstrualCycle], 201);
+}
 
-    public function index()
-    {
-        // Retrieve all menstrual cycles for the authenticated user
-        $cycles = MenstrualCycle::where('user_id', Auth::id())->get();
+public function index()
+{
+    // Retrieve all menstrual cycles for the authenticated user
+    $cycles = MenstrualCycle::where('user_id', Auth::id())->get();
 
-        return response()->json(['message' => 'Data retrieved successfully', 'data' => $cycles], 200);
-    }
+    // Format the response to convert 1/0 to true/false
+    $formattedCycles = $cycles->map(function ($cycle) {
+        return [
+            'id' => $cycle->id,
+            'last_period_start' => $cycle->last_period_start,
+            'last_period_finish' => $cycle->last_period_finish,
+            'is_completed' => (bool) $cycle->is_completed, // Convert to boolean
+            'created_at' => $cycle->created_at,
+            'updated_at' => $cycle->updated_at,
+        ];
+    });
+
+    return response()->json(['message' => 'Data retrieved successfully', 'data' => $formattedCycles], 200);
+}
+
+
 
     public function checkCycle()
     {
@@ -57,21 +71,20 @@ class MenstrualCycleController extends Controller
 
                 return response()->json([
                     'message' => 'Siklus menstruasi telah selesai.',
-                    'is_completed' => true,
+                    'is_completed' => true, // Return true explicitly
                 ], 200);
-            }
-
-            // If still within the start and finish dates
-            if ($currentDate->between($lastCycle->last_period_start, $lastCycle->last_period_finish)) {
+            } else {
+                // If still within the finish date
                 return response()->json([
                     'message' => 'Siklus menstruasi masih berlangsung.',
-                    'is_completed' => false,
+                    'is_completed' => false, // Return false explicitly
                 ], 200);
             }
         }
 
         return response()->json(['message' => 'Data siklus menstruasi tidak ditemukan.'], 404);
     }
+
 
     public function update(Request $request)
 {

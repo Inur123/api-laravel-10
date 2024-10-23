@@ -20,7 +20,7 @@ Route::middleware('web')->group(function () {
     // Authentication routes (session-based for login/logout)
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/logout', [AuthController::class, 'logout']);
 });
 
 // Rute yang memerlukan autentikasi (user sudah login)
@@ -28,6 +28,7 @@ Route::middleware(['web', 'auth:web'])->group(function () {
 
     // User route to get authenticated user details (session-based)
     Route::get('/user', [AuthController::class, 'getUser']);
+    Route::put('/user', [AuthController::class, 'update']);
 
     // Menstrual Cycle routes
     Route::put('/menstrual-cycle', [MenstrualCycleController::class, 'update']);
