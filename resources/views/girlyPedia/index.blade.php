@@ -4,12 +4,19 @@
 
 @push('style')
     <!-- CSS Libraries -->
+    <style>
+        .truncate {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Adjust this width as needed */
+        }
+    </style>
 @endpush
 
 @section('main')
     <div class="main-content">
         <section class="section">
-
             <div class="section-body">
                 <div class="row">
                     <div class="col-12">
@@ -28,7 +35,6 @@
                                         </div>
                                     </form>
                                 </div>
-
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -47,10 +53,11 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $item->title }}</td>
-                                                <td>{{ $item->description }}</td>
+                                                <td class="truncate" title="{{ $item->description }}">
+                                                    {{ Str::limit($item->description, 50, '...') }} <!-- Adjust 50 to desired length -->
+                                                </td>
                                                 <td><a href="{{ $item->link }}" target="_blank">Visit</a></td>
                                                 <td>
-
                                                     <a href="{{ route('girlyPedia.edit', $item->id) }}" class="btn btn-warning">Edit</a>
                                                     <form action="{{ route('girlyPedia.destroy', $item->id) }}" method="POST" style="display:inline;">
                                                         @csrf
