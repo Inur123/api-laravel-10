@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('menstrual_cycles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel users
-            $table->integer('cycle_duration')->comment('Durasi siklus dalam hari (4-14)'); // Durasi siklus
             $table->date('last_period_start')->comment('Tanggal mulai periode terakhir'); // Tanggal periode terakhir
             $table->date('last_period_finish')->nullable()->comment('Tanggal selesai periode terakhir'); // Tanggal selesai periode terakhir (nullable)
             $table->boolean('is_completed')->default(false)->comment('Status apakah siklus sudah selesai'); // Status siklus

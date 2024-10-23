@@ -11,8 +11,8 @@ class MenstrualCycle extends Model
 
     protected $fillable = [
         'user_id',
-        'cycle_duration',
         'last_period_start',
-        'gap_days',
+        'last_period_finish',
+        'is_completed',
     ];
 }
