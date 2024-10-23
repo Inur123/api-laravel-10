@@ -13,7 +13,7 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Edit GirlyPedia Item</h1>
+            <h1>Edit GirlyPedia</h1>
         </div>
 
         <div class="section-body">

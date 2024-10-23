@@ -49,7 +49,7 @@
                                                 <td class="truncate" title="{{ $podcast->description }}">
                                                     {{ Str::limit($podcast->description, 50, '...') }}
                                                 </td>
-                                                <td><a href="{{ $podcast->link }}" target="_blank" class="btn btn-link">Listen</a></td>
+                                                <td><a href="{{ $podcast->link }}" target="_blank" class="btn btn-link">Visit</a></td>
                                                 <td>
                                                     <a href="{{ route('podcasts.edit', $podcast->id) }}" class="btn btn-warning">Edit</a>
                                                     <form action="{{ route('podcasts.destroy', $podcast->id) }}" method="POST" style="display:inline;">

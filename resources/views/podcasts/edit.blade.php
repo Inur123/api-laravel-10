@@ -8,16 +8,17 @@
 
 @section('main')
 <script src="https://cdn.tiny.cloud/1/mimr482vltcpcta1nd94dwlkgbsdgmcyz4n3tve4ydvf4l83/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    <div class="main-content">
-        <section class="section">
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Edit Podcast</h4>
-                            </div>
-                            <div class="card-body">
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <h1>Edit Podcast </h1>
+        </div>
+
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
                                 <form action="{{ route('podcasts.update', $podcast->id) }}" method="POST">
                                     @csrf
                                     @method('PUT')
@@ -62,6 +63,7 @@
         </section>
     </div>
 
+    @endsection
     <script>
         tinymce.init({
             selector: '#description',
@@ -85,7 +87,6 @@
             height: 300,
         });
     </script>
-@endsection
 
 @push('scripts')
     <!-- JS Libraries -->

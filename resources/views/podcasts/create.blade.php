@@ -8,17 +8,17 @@
 
 @section('main')
 <script src="https://cdn.tiny.cloud/1/mimr482vltcpcta1nd94dwlkgbsdgmcyz4n3tve4ydvf4l83/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    <div class="main-content">
-        <section class="section">
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <h1>Create Podcast Item</h1>
+        </div>
 
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Create Podcast</h4>
-                            </div>
-                            <div class="card-body">
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
                                 <form action="{{ route('podcasts.store') }}" method="POST">
                                     @csrf
 
