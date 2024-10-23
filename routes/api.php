@@ -30,7 +30,7 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
 
     // Menstrual Cycle routes
-    Route::put('menstrual-cycles/{id}', [MenstrualCycleController::class, 'update']);
+    Route::put('/menstrual-cycle', [MenstrualCycleController::class, 'update']);
     Route::get('/menstrual-cycles', [MenstrualCycleController::class, 'index']);
     Route::post('/menstrual-cycle', [MenstrualCycleController::class, 'store']);
     Route::post('/check-cycle', [MenstrualCycleController::class, 'checkCycle']);

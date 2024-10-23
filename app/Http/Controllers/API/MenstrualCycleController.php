@@ -87,34 +87,35 @@ class MenstrualCycleController extends Controller
         return response()->json(['message' => 'Data siklus menstruasi tidak ditemukan.'], 404);
     }
 
-    public function update(Request $request, $id)
-    {
-        // Validasi data yang diterima
-        $request->validate([
-            'cycle_duration' => 'required|integer|min:4|max:14',
-            'last_period_start' => 'required|date',
-            'gap_days' => 'required|integer|min:1',
-        ]);
+    public function update(Request $request)
+{
+    // Validasi data yang diterima
+    $request->validate([
+        'cycle_duration' => 'required|integer|min:4|max:14',
+        'last_period_start' => 'required|date',
+        'gap_days' => 'required|integer|min:1',
+    ]);
 
-        // Ambil siklus menstruasi berdasarkan ID dan user_id
-        $menstrualCycle = MenstrualCycle::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->first();
+    // Ambil siklus menstruasi terakhir berdasarkan user_id
+    $menstrualCycle = MenstrualCycle::where('user_id', Auth::id())
+        ->orderBy('created_at', 'desc')
+        ->first();
 
-        // Cek apakah siklus ditemukan dan dimiliki oleh pengguna
-        if (!$menstrualCycle) {
-            return response()->json(['message' => 'Siklus menstruasi tidak ditemukan atau tidak berhak mengakses.'], 404);
-        }
-
-        // Hitung tanggal selesai berdasarkan durasi dan update data
-        $lastPeriodFinish = Carbon::parse($request->last_period_start)->addDays($request->cycle_duration);
-        $menstrualCycle->update([
-            'cycle_duration' => $request->cycle_duration,
-            'last_period_start' => $request->last_period_start,
-            'last_period_finish' => $lastPeriodFinish->toDateString(), // Simpan sebagai string
-        ]);
-
-        return response()->json(['message' => 'Menstrual cycle data updated successfully!', 'data' => $menstrualCycle], 200);
+    // Cek apakah siklus ditemukan dan dimiliki oleh pengguna
+    if (!$menstrualCycle) {
+        return response()->json(['message' => 'Siklus menstruasi tidak ditemukan atau tidak berhak mengakses.'], 404);
     }
+
+    // Hitung tanggal selesai berdasarkan durasi dan update data
+    $lastPeriodFinish = Carbon::parse($request->last_period_start)->addDays($request->cycle_duration);
+    $menstrualCycle->update([
+        'cycle_duration' => $request->cycle_duration,
+        'last_period_start' => $request->last_period_start,
+        'last_period_finish' => $lastPeriodFinish->toDateString(), // Simpan sebagai string
+    ]);
+
+    return response()->json(['message' => 'Menstrual cycle data updated successfully!', 'data' => $menstrualCycle], 200);
+}
+
 
 }
