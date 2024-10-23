@@ -26,14 +26,7 @@
                                 <h4 class="text-lg font-semibold text-gray-700">Podcast Table</h4>
                                 <div class="card-header-action d-flex">
                                     <a href="{{ route('podcasts.create') }}" class="btn btn-success">Create Podcast</a>
-                                    <form class="ml-2" action="" method="GET">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search">
-                                            <div class="input-group-btn">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
+
                                 </div>
                             </div>
                             <div class="card-body p-2">
