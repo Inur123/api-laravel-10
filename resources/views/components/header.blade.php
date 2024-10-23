@@ -23,7 +23,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right">
 
-                <div class="dropdown-divider"></div>
+
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
