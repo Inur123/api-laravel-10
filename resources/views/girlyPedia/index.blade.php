@@ -4,12 +4,13 @@
 
 @push('style')
     <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .truncate {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 200px; /* Adjust this width as needed */
+            max-width: 200px; /* Adjust as needed */
         }
     </style>
 @endpush
@@ -23,23 +24,15 @@
                         <div class="card">
                             <div class="card-header">
                                 <h4>GirlyPedia Table</h4>
-
                                 <div class="card-header-action d-flex">
                                     <a href="{{ route('girlyPedia.create') }}" class="btn btn-success ml-2">Create GirlyPedia Item</a>
-                                    <form>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search">
-                                            <div class="input-group-btn">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
+
                                 </div>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body p-2">
                                 <div class="table-responsive">
-                                    <table class="table-striped table" id="sortable-table">
-                                        <thead>
+                                    <table class="table table-striped table-bordered" id="sortable-table">
+                                        <thead class="thead-light">
                                             <tr>
                                                 <th>No</th>
                                                 <th>Title</th>
@@ -54,9 +47,9 @@
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $item->title }}</td>
                                                 <td class="truncate" title="{{ $item->description }}">
-                                                    {{ Str::limit($item->description, 50, '...') }} <!-- Adjust 50 to desired length -->
+                                                    {{ Str::limit($item->description, 50, '...') }}
                                                 </td>
-                                                <td><a href="{{ $item->link }}" target="_blank">Visit</a></td>
+                                                <td><a href="{{ $item->link }}" target="_blank" class="btn btn-link">Visit</a></td>
                                                 <td>
                                                     <a href="{{ route('girlyPedia.edit', $item->id) }}" class="btn btn-warning">Edit</a>
                                                     <form action="{{ route('girlyPedia.destroy', $item->id) }}" method="POST" style="display:inline;">
@@ -82,7 +75,11 @@
 @push('scripts')
     <!-- JS Libraries -->
     <script src="{{ asset('library/jquery-ui-dist/jquery-ui.min.js') }}"></script>
-
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/components-table.js') }}"></script>
+    <script>
+        $(document).ready( function () {
+    $('#sortable-table').DataTable();
+} );
+    </script>
 @endpush

@@ -6,6 +6,8 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
         name="viewport">
     <title>@yield('title') &mdash; Stisla</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+
 
     <link rel="icon" href="{{ asset('img/logo1.svg') }}" type="image/png">
     <!-- General CSS Files -->
@@ -69,7 +71,7 @@
     <script src="{{ asset('js/stisla.js') }}"></script>
 
     @stack('scripts')
-
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
     <!-- Template JS File -->
     <script src="{{ asset('js/scripts.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
