@@ -26,7 +26,19 @@
     <link rel="stylesheet"
         href="{{ asset('css/components.css') }}">
 </head>
+<style>
+    .btn-custom {
+        background-color: #EC76A0; /* Warna latar belakang */
+        border-color: #EC76A0;     /* Warna batas */
+        color: white;              /* Warna teks */
+        transition: background-color 0.3s, border-color 0.3s; /* Efek transisi */
+    }
 
+    .btn-custom:hover {
+        background-color: #FFABC7 !important; /* Warna latar belakang saat hover */
+        border-color: #FFABC7 !important;     /* Warna batas saat hover */
+    }
+</style>
 <body>
     <div id="app">
         <section class="section">
@@ -74,7 +86,8 @@
                                 </div>
 
                                 <div class="form-group text-right">
-                                    <button type="submit" class="btn btn-primary">Login</button>
+                                    <button type="submit" class="btn btn-custom">Login</button>
+
                                 </div>
 
                                 <!-- Error message for invalid login credentials -->
@@ -83,8 +96,7 @@
 
 
                         <div class="text-small mt-5 text-center">
-                            Copyright &copy; Your Company. Made with 💙 by NodeLabs
-
+                            Copyright &copy; Girly Pops. Made with 💖 by NodeLabs
                         </div>
                     </div>
                 </div>

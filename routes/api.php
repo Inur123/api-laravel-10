@@ -21,11 +21,12 @@ Route::middleware('web')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/logout', [AuthController::class, 'logout']);
+
 });
 
 // Rute yang memerlukan autentikasi (user sudah login)
 Route::middleware(['web', 'auth:web'])->group(function () {
-
+    Route::get('/registration-statistics', [AuthController::class, 'getRegistrationStatistics']);
     // User route to get authenticated user details (session-based)
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::put('/user', [AuthController::class, 'update']);

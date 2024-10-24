@@ -151,4 +151,17 @@ class AuthController extends Controller
         // Return success response with updated user data
         return response()->json(['message' => 'User data updated successfully!', 'user' => $user], 200);
     }
+
+    public function getRegistrationStatistics()
+{
+    // Retrieve the number of registrations for each day in the last 30 days
+    $registrations = User::selectRaw('DATE(created_at) as date, count(*) as count')
+        ->where('created_at', '>=', now()->subDays(30)) // Adjust the period as needed
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get();
+
+    return response()->json($registrations, 200);
+}
+
 }

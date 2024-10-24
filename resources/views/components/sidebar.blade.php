@@ -25,7 +25,7 @@
             <li
                 class="{{ Request::is('girlyPedia') || Request::is('girlyPedia/create') || Request::is('girlyPedia/*/edit') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('girlyPedia.index') }}">
-                    <i class="fas fa-users"></i> <span>Girly Pedia</span>
+                    <i class="fas fa-female"></i> <span>Girly Pedia</span>
                 </a>
             </li>
 
