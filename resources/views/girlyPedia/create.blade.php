@@ -17,7 +17,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('girlyPedia.store') }}" method="POST">
+                            <form action="{{ route('girlyPedia.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
                                     <label for="title">Title</label>
@@ -30,6 +30,11 @@
                                 <div class="form-group">
                                     <label for="link">Link</label>
                                     <input type="url" class="form-control" id="link" name="link" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="image">Image</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <small class="form-text text-muted">Optional: Upload an image (JPEG, PNG, GIF).</small>
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-success">Create Item</button>

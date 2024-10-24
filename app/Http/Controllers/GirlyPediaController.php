@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\GirlyPedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class GirlyPediaController extends Controller
 {
     public function index()
     {
-        // Ambil semua item GirlyPedia untuk pengguna yang terautentikasi
+        // Retrieve all GirlyPedia items for authenticated users
         $girlyPediaItems = GirlyPedia::all();
 
         return view('girlyPedia.index', compact('girlyPediaItems'));
@@ -18,7 +19,7 @@ class GirlyPediaController extends Controller
 
     public function create()
     {
-        // Pastikan hanya admin yang dapat mengakses halaman ini
+        // Ensure only admin can access this page
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('girlyPedia.index')->with('error', 'Unauthorized');
         }
@@ -28,7 +29,7 @@ class GirlyPediaController extends Controller
 
     public function store(Request $request)
     {
-        // Hanya admin yang dapat menambah data
+        // Only admin can add data
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('girlyPedia.index')->with('error', 'Unauthorized');
         }
@@ -37,13 +38,21 @@ class GirlyPediaController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'link' => 'required|url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Add image validation
         ]);
 
         $girlyPediaItem = new GirlyPedia();
         $girlyPediaItem->title = $request->title;
         $girlyPediaItem->description = $request->description;
         $girlyPediaItem->link = $request->link;
-        $girlyPediaItem->user_id = auth()->id(); // Menambahkan user_id
+        $girlyPediaItem->user_id = auth()->id(); // Add user_id
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public'); // Store image and get the path
+            $girlyPediaItem->image = $imagePath; // Save the image path to the model
+        }
+
         $girlyPediaItem->save();
 
         return redirect()->route('girlyPedia.index')->with('success', 'Item added successfully.');
@@ -57,7 +66,7 @@ class GirlyPediaController extends Controller
 
     public function edit($id)
     {
-        // Pastikan hanya admin yang dapat mengakses halaman ini
+        // Ensure only admin can access this page
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('girlyPedia.index')->with('error', 'Unauthorized');
         }
@@ -68,7 +77,7 @@ class GirlyPediaController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Hanya admin yang dapat mengupdate data
+        // Only admin can update data
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('girlyPedia.index')->with('error', 'Unauthorized');
         }
@@ -77,22 +86,44 @@ class GirlyPediaController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'link' => 'required|url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Add image validation
         ]);
 
         $girlyPediaItem = GirlyPedia::findOrFail($id);
-        $girlyPediaItem->update($request->all());
+        $girlyPediaItem->title = $request->title;
+        $girlyPediaItem->description = $request->description;
+        $girlyPediaItem->link = $request->link;
+
+        // Handle image upload if a new image is provided
+        if ($request->hasFile('image')) {
+            // Optionally, delete the old image if necessary
+            if ($girlyPediaItem->image) {
+                Storage::disk('public')->delete($girlyPediaItem->image); // Delete the old image
+            }
+
+            $imagePath = $request->file('image')->store('images', 'public'); // Store new image
+            $girlyPediaItem->image = $imagePath; // Update image path
+        }
+
+        $girlyPediaItem->save(); // Save the updated item
 
         return redirect()->route('girlyPedia.index')->with('success', 'Item updated successfully!');
     }
 
     public function destroy($id)
     {
-        // Hanya admin yang dapat menghapus data
+        // Only admin can delete data
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('girlyPedia.index')->with('error', 'Unauthorized');
         }
 
         $girlyPediaItem = GirlyPedia::findOrFail($id);
+
+        // Optionally, delete the image file from storage
+        if ($girlyPediaItem->image) {
+            Storage::disk('public')->delete($girlyPediaItem->image); // Delete the image
+        }
+
         $girlyPediaItem->delete();
 
         return redirect()->route('girlyPedia.index')->with('success', 'Item deleted successfully!');

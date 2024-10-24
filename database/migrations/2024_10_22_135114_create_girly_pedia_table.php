@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('girly_pedia', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Tambahkan ini
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Add this line
             $table->string('title');
             $table->text('description');
             $table->string('link');
+            $table->string('image')->nullable(); // Add this line for the image path
             $table->timestamps();
         });
     }

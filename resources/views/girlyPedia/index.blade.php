@@ -12,6 +12,7 @@
             text-overflow: ellipsis;
             max-width: 200px; /* Adjust as needed */
         }
+
     </style>
 @endpush
 
@@ -44,6 +45,7 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>No</th>
+                                                <th>Image</th>
                                                 <th>Title</th>
                                                 <th>Description</th>
                                                 <th>Link</th>
@@ -54,6 +56,13 @@
                                             @foreach($girlyPediaItems as $index => $item)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
+                                                    <td>
+                                                        @if ($item->image)
+                                                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}" style="width: 100px;">
+                                                        @else
+                                                            <span>No Image</span>
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $item->title }}</td>
                                                     <td class="truncate" title="{{ $item->description }}">
                                                         {{ Str::limit($item->description, 50, '...') }}
