@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\StatusController;
@@ -26,23 +25,21 @@ Route::middleware('web')->group(function () {
 
 // Rute yang memerlukan autentikasi (user sudah login)
 Route::middleware(['web', 'auth:web'])->group(function () {
+    // Authentication statistics and user profile
     Route::get('/registration-statistics', [AuthController::class, 'getRegistrationStatistics']);
-    // User route to get authenticated user details (session-based)
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::put('/user', [AuthController::class, 'update']);
 
-    // Menstrual Cycle routes
-    Route::put('/menstrual-cycle', [MenstrualCycleController::class, 'update']);
-    Route::get('/menstrual-cycles', [MenstrualCycleController::class, 'index']);
-    Route::post('/menstrual-cycle', [MenstrualCycleController::class, 'store']);
+    // Menstrual Cycle routes using apiResource
+    Route::apiResource('/menstrual-cycles', MenstrualCycleController::class)->only(['index', 'store', 'update']);
     Route::post('/check-cycle', [MenstrualCycleController::class, 'checkCycle']);
 
     // Welcome route
     Route::get('/welcome', [StatusController::class, 'welcome']);
 
-    // Girly Pedia routes using resource controller
+    // Girly Pedia routes using apiResource
     Route::apiResource('/girly-pedia', GirlyPediaController::class);
 
-    // Podcast routes using resource controller
+    // Podcast routes using apiResource
     Route::apiResource('/podcasts', PodcastController::class);
 });
