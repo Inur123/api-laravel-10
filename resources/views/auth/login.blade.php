@@ -37,57 +37,50 @@
                             alt="logo"
                             width="80"
                             class="shadow-light rounded-circle mb-5 mt-2">
-                        <h4 class="text-dark font-weight-normal">Welcome to <span class="font-weight-bold" style="color: #FFAFCE;">Girly Pedia</span>
+                        <h4 class="text-dark font-weight-normal">Welcome to <span class="font-weight-bold" style="color: #FFAFCE;">Girly Pops</span>
                         </h4>
                         <p class="text-muted">hai! aku Poppy, aku akan menemani perjalananmu dalam petualangan GirlyPOPS!
                             have an account.</p>
                             <form action="{{ route('login') }}" method="POST">
                                 @csrf
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input id="email"
-                                    type="email"
-                                    class="form-control"
-                                    name="email"
-                                    tabindex="1"
-                                    required
-                                    autofocus>
-                                <div class="invalid-feedback">
-                                    Please fill in your email
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input id="email"
+                                        type="email"
+                                        class="form-control @error('email') is-invalid @enderror"
+                                        name="email"
+                                        value="{{ old('email') }}"
+                                        required
+                                        autofocus>
+                                    @error('email')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
-                            </div>
 
-                            <div class="form-group">
-                                <div class="d-block">
-                                    <label for="password"
-                                        class="control-label">Password</label>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input id="password"
+                                        type="password"
+                                        class="form-control @error('password') is-invalid @enderror"
+                                        name="password"
+                                        required>
+                                    @error('password')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
-                                <input id="password"
-                                    type="password"
-                                    class="form-control"
-                                    name="password"
-                                    tabindex="2"
-                                    required>
-                                <div class="invalid-feedback">
-                                    please fill in your password
+
+                                <div class="form-group text-right">
+                                    <button type="submit" class="btn btn-primary">Login</button>
                                 </div>
-                            </div>
 
+                                <!-- Error message for invalid login credentials -->
 
+                            </form>
 
-                            <div class="form-group text-right">
-
-                                <button type="submit"
-                                class="btn btn-lg btn-icon icon-right"
-                                style="background-color: #FFAFCE; color: white;"
-                                tabindex="4">
-                            Login
-                        </button>
-
-                            </div>
-
-
-                        </form>
 
                         <div class="text-small mt-5 text-center">
                             Copyright &copy; Your Company. Made with 💙 by NodeLabs
