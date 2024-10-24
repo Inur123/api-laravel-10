@@ -11,7 +11,7 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header">
-            <h1>Edit Podcast </h1>
+            <h1>Edit Podcast</h1>
         </div>
 
         <div class="section-body">
@@ -62,19 +62,20 @@
             </div>
         </section>
     </div>
-
     @endsection
+
+
+@push('scripts')
+    <!-- JS Libraries -->
+    <script src="https://cdn.tiny.cloud/1/mimr482vltcpcta1nd94dwlkgbsdgmcyz4n3tve4ydvf4l83/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: '#description',
+            selector: '#description', // Select the textarea for TinyMCE
             plugins: [
-                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media',
-                'searchreplace', 'table', 'visualblocks', 'wordcount',
-                'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed',
-                'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste',
-                'advtable', 'advcode', 'editimage', 'advtemplate', 'ai',
-                'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags',
-                'autocorrect', 'typography', 'inlinecss', 'markdown',
+                // Core editing features
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                // Premium features for trial
+                'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
             ],
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
             tinycomments_mode: 'embedded',
@@ -84,10 +85,6 @@
                 { value: 'Email', title: 'Email' },
             ],
             ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-            height: 300,
         });
     </script>
-
-@push('scripts')
-    <!-- JS Libraries -->
 @endpush
