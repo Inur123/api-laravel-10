@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
+use App\Models\Challenge;
 use Illuminate\Http\Request;
 use App\Models\MenstrualCycle;
 use App\Http\Controllers\Controller;
@@ -77,39 +78,44 @@ class AuthController extends Controller
     }
 
     public function getUser(Request $request)
-    {
-        // Check if user session exists and return user details
-        if ($request->session()->has('user')) {
-            // Retrieve the user from session
-            $user = $request->session()->get('user');
+{
+    // Check if user session exists and return user details
+    if ($request->session()->has('user')) {
+        // Retrieve the user from session
+        $user = $request->session()->get('user');
 
-            // Retrieve the latest menstrual cycle for the user
-            $latestCycle = MenstrualCycle::where('user_id', $user->id)->latest()->first();
+        // Retrieve the latest menstrual cycle for the user
+        $latestCycle = MenstrualCycle::where('user_id', $user->id)->latest()->first();
 
-            // Prepare the user data
-            $userData = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-                'date_of_birth' => $user->date_of_birth,
-                'phone_number' => $user->phone_number,
-                'institution_code' => $user->institution_code,
-                'guardian_email' => $user->guardian_email,
-                'role' => $user->role,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ];
+        // Retrieve all challenges with their daily tasks for the user
+        $challenges = Challenge::where('user_id', $user->id)
+            ->with('dailies') // Include the related daily tasks
+            ->get();
 
-            // If a menstrual cycle exists, attach it directly to the user object
-            $userData['menstrual_cycles'] = $latestCycle ?: null;
+        // Prepare the user data
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'email_verified_at' => $user->email_verified_at,
+            'date_of_birth' => $user->date_of_birth,
+            'phone_number' => $user->phone_number,
+            'institution_code' => $user->institution_code,
+            'guardian_email' => $user->guardian_email,
+            'role' => $user->role,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'menstrual_cycles' => $latestCycle ?: null,  // Menstrual cycle data
+            'challenges' => $challenges,  // Include the challenges and their daily tasks
+        ];
 
-            // Return the user object with the menstrual cycle included
-            return response()->json($userData, 200);
-        }
-
-        return response()->json(['message' => 'No authenticated user found'], 404);
+        // Return the user object with the menstrual cycle and challenges included
+        return response()->json($userData, 200);
     }
+
+    return response()->json(['message' => 'No authenticated user found'], 404);
+}
+
 
     public function update(Request $request)
     {

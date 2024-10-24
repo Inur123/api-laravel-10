@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\StatusController;
 use App\Http\Controllers\API\PodcastController;
+use App\Http\Controllers\API\ChallengeController;
 use App\Http\Controllers\API\GirlyPediaController;
 use App\Http\Controllers\API\MenstrualCycleController;
 
@@ -42,4 +43,20 @@ Route::middleware(['web', 'auth:web'])->group(function () {
 
     // Podcast routes using apiResource
     Route::apiResource('/podcasts', PodcastController::class);
+
+    // Challenge routes
+Route::apiResource('/challenges', ChallengeController::class)->only(['index', 'store']);
+
+// Route to add daily tasks to a challenge owned by the current user
+Route::post('/challenges/dailies', [ChallengeController::class, 'storeDaily']);
+
+// Route to update challenge progress
+Route::put('/challenges/{challenge}/progress', [ChallengeController::class, 'updateProgress']);
+
+// Route to update daily task
+Route::put('/dailies/{daily}', [ChallengeController::class, 'updateDaily']);
+
+// Mark daily task as completed
+Route::patch('dailies/{dailyId}/complete', [ChallengeController::class, 'completeDailyTask']);
+
 });
