@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -14,37 +15,39 @@ class AuthWebController extends Controller
     }
 
     public function login(Request $request)
-{
-    // Validate the incoming request data
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-    // Check if the email exists in the database
-    $user = User::where('email', $request->email)->first();
+        // Check if the email exists in the database
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user) {
-        return back()->withErrors(['email' => 'Email not found.'])->onlyInput('email');
+        if (!$user) {
+            // Set an error message
+            return redirect()->back()->with('error', 'Email not found.')->withInput();
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            // Set an error message for incorrect password
+            return redirect()->back()->with('error', 'Password Salah.')->withInput();
+        }
+
+        // Attempt login
+        if (Auth::attempt($request->only('email', 'password'))) {
+            // Set a success message
+            return redirect()->intended('/dashboard')->with('success', 'Login berhasil! Selamat datang kembali.');
+        }
+
+        // If login fails
+        return redirect()->back()->with('error', 'Login failed. Please try again.')->withInput();
     }
-
-    if (!Hash::check($request->password, $user->password)) {
-        return back()->withErrors(['password' => 'Password Salah.'])->onlyInput('password');
-    }
-
-    // Attempt login
-    if (Auth::attempt($request->only('email', 'password'))) {
-        // Set a flash message
-        return redirect()->intended('/dashboard')->with('success', 'Login berhasil! Selamat datang kembali.');
-    }
-
-    return back()->withErrors(['email' => 'Login failed. Please try again.']);
-}
-
 
     public function logout()
     {
         Auth::logout();
-        return redirect('/login'); // Redirect ke halaman login setelah logout
+        return redirect('/login')->with('success', 'Logout berhasil!'); // Set a success message on logout
     }
 }

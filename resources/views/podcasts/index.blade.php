@@ -26,10 +26,19 @@
                                 <h4 class="text-lg font-semibold text-gray-700">Podcast Table</h4>
                                 <div class="card-header-action d-flex">
                                     <a href="{{ route('podcasts.create') }}" class="btn btn-success">Create Podcast</a>
-
                                 </div>
                             </div>
                             <div class="card-body p-2">
+                                @if (session('success'))
+                                    <div id="global-alert" class="alert alert-success">
+                                        {{ session('success') }}
+                                    </div>
+                                @endif
+                                @if (session('error'))
+                                    <div id="global-alert" class="alert alert-danger">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
                                 <div class="table-responsive">
                                     <table class="table table-striped table-bordered" id="sortable-table">
                                         <thead class="thead-light">
@@ -81,6 +90,15 @@
     <script>
         $(document).ready(function () {
             $('#sortable-table').DataTable();
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var alert = document.getElementById('global-alert');
+            if (alert) {
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 3000); // Hide after 3 seconds
+            }
         });
     </script>
 @endpush

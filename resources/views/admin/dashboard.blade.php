@@ -12,6 +12,19 @@
 
 @section('main')
     <div class="main-content">
+        <!-- Toastr Notifications -->
+        @if (session('success'))
+            <script>
+                toastr.success("{{ session('success') }}");
+            </script>
+        @endif
+
+        @if (session('error'))
+            <script>
+                toastr.error("{{ session('error') }}");
+            </script>
+        @endif
+
         <section class="section">
             <div class="section-header">
                 <h1>Dashboard</h1>
@@ -83,7 +96,7 @@
 @endsection
 
 @push('scripts')
-    <!-- JS Libraies -->
+    <!-- JS Libraries -->
     <script src="{{ asset('library/simpleweather/jquery.simpleWeather.min.js') }}"></script>
     <script src="{{ asset('library/chart.js/dist/Chart.min.js') }}"></script>
     <script src="{{ asset('library/jqvmap/dist/jquery.vmap.min.js') }}"></script>
