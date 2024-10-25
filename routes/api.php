@@ -32,7 +32,9 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     Route::put('/user', [AuthController::class, 'update']);
 
     // Menstrual Cycle routes using apiResource
-    Route::apiResource('/menstrual-cycles', MenstrualCycleController::class)->only(['index', 'store', 'update']);
+    Route::put('/menstrual-cycle', [MenstrualCycleController::class, 'update']);
+    Route::get('/menstrual-cycles', [MenstrualCycleController::class, 'index']);
+    Route::post('/menstrual-cycle', [MenstrualCycleController::class, 'store']);
     Route::post('/check-cycle', [MenstrualCycleController::class, 'checkCycle']);
 
     // Welcome route
