@@ -88,9 +88,6 @@ class AuthController extends Controller
         $latestCycle = MenstrualCycle::where('user_id', $user->id)->latest()->first();
 
         // Retrieve all challenges with their daily tasks for the user
-        $challenges = Challenge::where('user_id', $user->id)
-            ->with('dailies') // Include the related daily tasks
-            ->get();
 
         // Prepare the user data
         $userData = [
@@ -106,7 +103,7 @@ class AuthController extends Controller
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
             'menstrual_cycles' => $latestCycle ?: null,  // Menstrual cycle data
-            'challenges' => $challenges,  // Include the challenges and their daily tasks
+             // Include the challenges and their daily tasks
         ];
 
         // Return the user object with the menstrual cycle and challenges included

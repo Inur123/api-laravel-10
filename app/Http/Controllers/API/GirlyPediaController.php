@@ -11,8 +11,8 @@ class GirlyPediaController extends Controller
 {
     public function index()
     {
-        // Retrieve all GirlyPedia items for the authenticated user
-        $girlyPediaItems = GirlyPedia::where('user_id', Auth::id())->get();
+        // Ambil semua item GirlyPedia
+        $girlyPediaItems = GirlyPedia::all();
 
         return response()->json(['message' => 'Data retrieved successfully', 'data' => $girlyPediaItems], 200);
     }
