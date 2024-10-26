@@ -36,6 +36,18 @@
                     <i class="fas fa-podcast"></i> <span>Podcast</span>
                 </a>
             </li>
+            <li class="menu-header">Challenge</li>
+            <li class="{{ Request::is('challenges') || Request::is('challenges/create') || Request::is('challenges/*/edit') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('challenges.index') }}">
+                    <i class="fas fa-tasks"></i> <span>Challenge</span>
+                </a>
+            </li>
+            <li class="menu-header">Daily Tasks</li> <!-- Header untuk Daily Tasks -->
+            <li class="{{ Request::is('daily_tasks') || Request::is('daily_tasks/create') || Request::is('daily_tasks/*/edit') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('daily_tasks.index') }}">
+                    <i class="fas fa-calendar-check"></i> <span>Daily Task</span> <!-- Ikon untuk Daily Task -->
+                </a>
+            </li>
 
         </ul>
 

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthWebController;
 use App\Http\Controllers\PodcastController;
+use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\DailyTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GirlyPediaController;
 
@@ -30,3 +32,7 @@ Route::resource('girlyPedia', GirlyPediaController::class)->middleware('auth');
 
 // Resource route for podcasts
 Route::resource('podcasts', PodcastController::class)->middleware('auth');
+
+Route::resource('challenges', ChallengeController::class);
+
+Route::resource('daily_tasks', DailyTaskController::class);
