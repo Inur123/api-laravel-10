@@ -7,6 +7,7 @@ use App\Http\Controllers\API\PodcastController;
 use App\Http\Controllers\API\ChallengeController;
 use App\Http\Controllers\API\GirlyPediaController;
 use App\Http\Controllers\API\MenstrualCycleController;
+use App\Models\Challenge;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +45,17 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     Route::apiResource('/girly-pedia', GirlyPediaController::class);
 
     // Podcast routes using apiResource
+
     Route::apiResource('/podcasts', PodcastController::class);
 
+    Route::apiResource('challenges', ChallengeController::class);
     // Challenge routes
 
+    Route::post('challenges/{challengeId}/tasks', [ChallengeController::class, 'createDailyTask']);
+    Route::post('tasks/{taskId}/complete', [ChallengeController::class, 'markTaskAsCompleted']);
 
+    Route::get('challenges/{challengeId}/user-progress', [ChallengeController::class, 'getUserProgress']);
+    Route::get('/challenges/{challengeId}/user-progress', [ChallengeController::class, 'getUserDailyProgress']);
 });
+
+
