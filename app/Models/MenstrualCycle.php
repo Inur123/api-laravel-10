@@ -14,5 +14,6 @@ class MenstrualCycle extends Model
         'last_period_start',
         'last_period_finish',
         'is_completed',
+        'progress',
     ];
 }
