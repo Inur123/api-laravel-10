@@ -34,4 +34,10 @@ class User extends Authenticatable
                     ->withPivot('is_completed')
                     ->withTimestamps();
     }
+    public function podcasts()
+    {
+        return $this->belongsToMany(Podcast::class, 'podcast_user')
+                    ->withPivot('is_completed') // Include pivot field
+                    ->withTimestamps(); // If you have created_at and updated_at fields
+    }
 }

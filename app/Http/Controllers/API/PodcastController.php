@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Podcast;
+use App\Models\PodcastUser; // Make sure you have this model created
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -99,4 +100,57 @@ class PodcastController extends Controller
 
         return response()->json(['message' => 'Podcast deleted successfully!'], 200);
     }
+
+    public function markAsCompleted(Request $request, $id)
+{
+    // Validate the incoming request
+    $request->validate([
+        'is_completed' => 'required|boolean',
+    ]);
+
+    // Find the podcast item
+    $podcastItem = Podcast::findOrFail($id);
+
+    // Check if the relationship exists, and create if it doesn't
+    $podcastUser = PodcastUser::firstOrCreate(
+        ['user_id' => Auth::id(), 'podcast_id' => $podcastItem->id],
+        ['is_completed' => false, 'progress' => 0] // Default values
+    );
+
+    // Update the completion status
+    $podcastUser->is_completed = $request->is_completed; // Directly use the validated boolean value
+
+    // Set progress based on completion status
+    $podcastUser->progress = $request->is_completed ? 100 : 0;
+
+    $podcastUser->save();
+
+    // Calculate the new overall progress percentage for the user
+    $this->updateProgress(Auth::id());
+
+    return response()->json(['message' => 'Status updated successfully!', 'data' => $podcastUser], 200);
+}
+
+private function updateProgress($userId)
+{
+    // Get all podcast items for the user
+    $podcastUsers = PodcastUser::where('user_id', $userId)->get();
+
+    // Count total items and completed items
+    $totalItems = $podcastUsers->count();
+    $completedItems = $podcastUsers->where('is_completed', true)->count();
+
+    // Calculate the progress percentage
+    $progress = $totalItems > 0 ? round(($completedItems / $totalItems) * 100) : 0;
+
+    // Update progress for all related records
+    foreach ($podcastUsers as $podcastUser) {
+        $podcastUser->progress = $podcastUser->is_completed ? 100 : 0; // Set progress based on completion status
+        $podcastUser->save();
+    }
+
+    // If you want to save the overall progress to the user profile or another related model, do it here.
+}
+
+
 }

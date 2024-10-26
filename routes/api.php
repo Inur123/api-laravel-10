@@ -44,16 +44,16 @@ Route::middleware(['web', 'auth:web'])->group(function () {
     // Girly Pedia routes using apiResource
     Route::apiResource('/girly-pedia', GirlyPediaController::class);
     Route::post('girly-pedia/{id}/complete', [GirlyPediaController::class, 'markAsCompleted']);
+
     // Podcast routes using apiResource
-
     Route::apiResource('/podcasts', PodcastController::class);
+    Route::post('podcasts/{id}/complete', [PodcastController::class, 'markAsCompleted']);
 
+
+   // Challenge routes
     Route::apiResource('challenges', ChallengeController::class);
-    // Challenge routes
-
     Route::post('challenges/{challengeId}/tasks', [ChallengeController::class, 'createDailyTask']);
     Route::post('tasks/{taskId}/complete', [ChallengeController::class, 'markTaskAsCompleted']);
-
     Route::get('challenges/{challengeId}/user-progress', [ChallengeController::class, 'getUserProgress']);
     Route::get('/challenges/{challengeId}/user-progress', [ChallengeController::class, 'getUserDailyProgress']);
 });

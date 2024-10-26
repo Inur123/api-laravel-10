@@ -17,9 +17,12 @@ class Podcast extends Model
     ];
 
     // Definisikan hubungan dengan User
-    public function user()
+
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'podcast_user')
+                    ->withPivot('is_completed')
+                    ->withTimestamps();
     }
 }
 

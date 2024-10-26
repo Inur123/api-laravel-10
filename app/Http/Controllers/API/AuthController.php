@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
+use App\Models\Podcast;
 use App\Models\Challenge;
 use App\Models\GirlyPedia;
+use App\Models\PodcastUser;
 use Illuminate\Http\Request;
 use App\Models\GirlyPediaUser;
 use App\Models\MenstrualCycle;
@@ -99,7 +101,7 @@ class AuthController extends Controller
         $completedItemsCount = GirlyPediaUser::where('user_id', $userId)->where('is_completed', true)->count();
 
         // Calculate progress percentage for Girly Pedia
-        $progressPercentage = $totalItems > 0 ? ($completedItemsCount / $totalItems) * 100 : 0;
+        $progressPercentageGirlyPedia = $totalItems > 0 ? ($completedItemsCount / $totalItems) * 100 : 0;
 
         // Prepare user data
         $userData = [
@@ -115,7 +117,7 @@ class AuthController extends Controller
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
             'menstrual_cycles' => $latestCycle ?: null,  // Menstrual cycle data
-            'progress_percentage_girlypedia' => $progressPercentage,  // Girly Pedia progress percentage
+            'progress_percentage_girlypedia' => $progressPercentageGirlyPedia,  // Girly Pedia progress percentage
         ];
 
         // Now get the user's challenge progress
@@ -151,12 +153,42 @@ class AuthController extends Controller
         $userData['challenges'] = $challengeProgressData;
         $userData['overall_progress_percentage'] = min(100, $overallProgressPercentage); // Ensure the value does not exceed 100
 
-        // Return the user object with the menstrual cycle and challenges included
+        // Get podcast progress data
+        $podcasts = Podcast::all(); // Retrieve all podcasts or filter based on user preference
+        $podcastProgressData = $podcasts->map(function ($podcast) use ($userId) {
+            // Get progress for each podcast
+            $podcastProgress = PodcastUser::where('podcast_id', $podcast->id)
+                ->where('user_id', $userId)
+                ->first();
+
+            return [
+                'podcast_id' => $podcast->id,
+                'title' => $podcast->title,
+                'is_completed' => $podcastProgress ? $podcastProgress->is_completed : false,
+                'progress' => $podcastProgress ? $podcastProgress->progress : 0,
+            ];
+        });
+
+        // Calculate average podcast progress
+        $totalPodcastProgress = $podcastProgressData->sum('progress');
+        $totalPodcasts = $podcastProgressData->count();
+        $averagePodcastProgress = $totalPodcasts > 0 ? ($totalPodcastProgress / $totalPodcasts) : 0;
+
+        // Add podcast progress data and average to user data
+        $userData['podcasts'] = $podcastProgressData;
+        $userData['total_podcast_progress'] = min(100, $averagePodcastProgress); // Ensure the value does not exceed 100
+
+        // Calculate overall progress as the average of Girly Pedia and Podcast progress
+        $userData['overall_combined_progress'] = min(100, ($progressPercentageGirlyPedia + $userData['total_podcast_progress']) / 2); // Ensure the value does not exceed 100
+
+        // Return the user object with the menstrual cycle, challenges, and podcasts included
         return response()->json($userData, 200);
     }
 
     return response()->json(['message' => 'No authenticated user found'], 404);
 }
+
+
 
 
     public function update(Request $request)
