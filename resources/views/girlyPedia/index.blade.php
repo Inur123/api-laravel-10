@@ -10,9 +10,9 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 200px; /* Adjust as needed */
+            max-width: 200px;
+            /* Adjust as needed */
         }
-
     </style>
 @endpush
 
@@ -26,7 +26,8 @@
                             <div class="card-header">
                                 <h4>GirlyPedia Table</h4>
                                 <div class="card-header-action d-flex">
-                                    <a href="{{ route('girlyPedia.create') }}" class="btn btn-success ml-2">Create GirlyPedia Item</a>
+                                    <a href="{{ route('girlyPedia.create') }}" class="btn btn-success ml-2">Create
+                                        GirlyPedia Item</a>
                                 </div>
                             </div>
                             <div class="card-body p-2">
@@ -53,29 +54,37 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($girlyPediaItems as $index => $item)
+                                            @foreach ($girlyPediaItems as $index => $item)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>
                                                         @if ($item->image)
-                                                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}" style="width: 100px;">
+                                                           <img src="{{ asset('storage/' . $item->image) }}"
+                                                                alt="{{ $item->title }}" style="width: 100px;">
                                                         @else
                                                             <span>No Image</span>
                                                         @endif
                                                     </td>
-                                                    <td>{{ $item->title }}</td>
+                                                    <td class="truncate" title="{{ $item->title }}">
+                                                        {{ Str::limit($item->title, 30, '...') }}
+                                                        <!-- Limit the title length displayed -->
+                                                    </td>
                                                     <td class="truncate" title="{{ $item->description }}">
                                                         {{ Str::limit($item->description, 50, '...') }}
                                                     </td>
                                                     <td>
-                                                        <a href="{{ $item->link }}" target="_blank" class="btn btn-link">Visit</a>
+                                                        <a href="{{ $item->link }}" target="_blank"
+                                                            class="btn btn-link">Visit</a>
                                                     </td>
-                                                    <td>
-                                                        <a href="{{ route('girlyPedia.edit', $item->id) }}" class="btn btn-warning">Edit</a>
-                                                        <form action="{{ route('girlyPedia.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                    <td class="flex space-x-2">
+                                                        <a href="{{ route('girlyPedia.edit', $item->id) }}"
+                                                            class="btn btn-warning">Edit</a>
+                                                        <form action="{{ route('girlyPedia.destroy', $item->id) }}"
+                                                            method="POST" style="display:inline;">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
+                                                            <button type="submit" class="btn btn-danger"
+                                                                onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -97,7 +106,7 @@
     <script src="{{ asset('library/jquery-ui-dist/jquery-ui.min.js') }}"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#sortable-table').DataTable();
         });
 
