@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Models\User;
 use App\Models\Challenge;
+use App\Models\GirlyPedia;
 use Illuminate\Http\Request;
+use App\Models\GirlyPediaUser;
 use App\Models\MenstrualCycle;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\UserDailyTaskProgress;
 
 class AuthController extends Controller
 {
@@ -83,15 +86,24 @@ class AuthController extends Controller
     if ($request->session()->has('user')) {
         // Retrieve the user from session
         $user = $request->session()->get('user');
+        $userId = $user->id; // Get user ID for later use
 
         // Retrieve the latest menstrual cycle for the user
-        $latestCycle = MenstrualCycle::where('user_id', $user->id)->latest()->first();
+        $latestCycle = MenstrualCycle::where('user_id', $userId)->latest()->first();
 
-        // Retrieve all challenges with their daily tasks for the user
+        // Retrieve all Girly Pedia items and the user's progress
+        $girlyPediaItems = GirlyPedia::all(); // Or filter based on user or other criteria
 
-        // Prepare the user data
+        // Calculate the total number of items and the number of completed items
+        $totalItems = $girlyPediaItems->count();
+        $completedItemsCount = GirlyPediaUser::where('user_id', $userId)->where('is_completed', true)->count();
+
+        // Calculate progress percentage for Girly Pedia
+        $progressPercentage = $totalItems > 0 ? ($completedItemsCount / $totalItems) * 100 : 0;
+
+        // Prepare user data
         $userData = [
-            'id' => $user->id,
+            'id' => $userId,
             'name' => $user->name,
             'email' => $user->email,
             'email_verified_at' => $user->email_verified_at,
@@ -103,8 +115,41 @@ class AuthController extends Controller
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
             'menstrual_cycles' => $latestCycle ?: null,  // Menstrual cycle data
-             // Include the challenges and their daily tasks
+            'progress_percentage_girlypedia' => $progressPercentage,  // Girly Pedia progress percentage
         ];
+
+        // Now get the user's challenge progress
+        $userChallenges = Challenge::with('dailyTasks')->get(); // Get all challenges with their daily tasks
+
+        $challengeProgressData = $userChallenges->map(function ($challenge) use ($userId) {
+            // Calculate overall progress for the challenge
+            $totalTasks = $challenge->dailyTasks->count();
+            $completedTasks = UserDailyTaskProgress::whereIn('daily_task_id', $challenge->dailyTasks->pluck('id'))
+                ->where('user_id', $userId)
+                ->where('is_completed', true)
+                ->count();
+
+            // Calculate progress percentage for the challenge
+            $progressPercentage = $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0;
+
+            return [
+                'challenge_id' => $challenge->id,
+                'total_tasks' => $totalTasks,
+                'completed_tasks' => $completedTasks,
+                'progress_percentage' => $progressPercentage,
+            ];
+        });
+
+        // Calculate overall progress across all challenges by averaging progress percentages
+        $totalProgressPercentage = $challengeProgressData->sum('progress_percentage');
+        $totalChallenges = $challengeProgressData->count();
+
+        // Calculate the final overall progress percentage based on average
+        $overallProgressPercentage = $totalChallenges > 0 ? ($totalProgressPercentage / $totalChallenges) : 0;
+
+        // Add challenge progress data and overall progress to user data
+        $userData['challenges'] = $challengeProgressData;
+        $userData['overall_progress_percentage'] = min(100, $overallProgressPercentage); // Ensure the value does not exceed 100
 
         // Return the user object with the menstrual cycle and challenges included
         return response()->json($userData, 200);

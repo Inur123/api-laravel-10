@@ -1,21 +1,41 @@
 <?php
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\GirlyPedia;
 use Illuminate\Http\Request;
+use App\Models\GirlyPediaUser;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class GirlyPediaController extends Controller
 {
     public function index()
-    {
-        // Ambil semua item GirlyPedia
-        $girlyPediaItems = GirlyPedia::all();
+{
+    $user = Auth::user();
 
-        return response()->json(['message' => 'Data retrieved successfully', 'data' => $girlyPediaItems], 200);
-    }
+    // Ambil semua item GirlyPedia yang dibuat admin
+    $girlyPediaItems = GirlyPedia::with(['users' => function ($query) use ($user) {
+        $query->where('user_id', $user->id);
+    }])->get();
+
+    // Map data untuk menggabungkan informasi is_completed
+    $result = $girlyPediaItems->map(function ($item) use ($user) {
+        $isCompleted = $item->users->isNotEmpty() ? $item->users->first()->pivot->is_completed : false;
+
+        return [
+            'id' => $item->id,
+            'title' => $item->title,
+            'description' => $item->description,
+            'link' => $item->link,
+            'image' => $item->image,
+            'is_completed' => $isCompleted
+        ];
+    });
+
+    return response()->json(['message' => 'Data retrieved successfully', 'data' => $result], 200);
+}
+
 
     public function store(Request $request)
     {
@@ -120,4 +140,48 @@ class GirlyPediaController extends Controller
 
         return response()->json(['message' => 'GirlyPedia item deleted successfully!'], 200);
     }
+    public function markAsCompleted(Request $request, $id)
+    {
+        $request->validate([
+            'is_completed' => 'required|boolean',
+        ]);
+
+        $girlyPediaItem = GirlyPedia::findOrFail($id);
+
+        // Cek apakah hubungan sudah ada
+        $girlyPediaUser = GirlyPediaUser::firstOrCreate(
+            ['user_id' => Auth::id(), 'girly_pedia_id' => $girlyPediaItem->id],
+            ['is_completed' => false, 'progress' => 0] // Default values
+        );
+
+        // Update status
+        $girlyPediaUser->is_completed = $request->is_completed;
+        $girlyPediaUser->save();
+
+        // Calculate the new progress percentage
+        $this->updateProgress(Auth::id());
+
+        return response()->json(['message' => 'Status updated successfully!', 'data' => $girlyPediaUser], 200);
+    }
+
+    private function updateProgress($userId)
+    {
+        // Get all girly_pedia items for the user
+        $girlyPediaUsers = GirlyPediaUser::where('user_id', $userId)->get();
+
+        // Count total items and completed items
+        $totalItems = $girlyPediaUsers->count();
+        $completedItems = $girlyPediaUsers->where('is_completed', true)->count();
+
+        // Calculate the progress percentage
+        $progress = $totalItems > 0 ? round(($completedItems / $totalItems) * 100) : 0;
+
+        // Update progress for all related records
+        foreach ($girlyPediaUsers as $girlyPediaUser) {
+            $girlyPediaUser->progress = $progress;
+            $girlyPediaUser->save();
+        }
+    }
+
+
 }

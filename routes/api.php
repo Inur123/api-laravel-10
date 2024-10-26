@@ -43,7 +43,7 @@ Route::middleware(['web', 'auth:web'])->group(function () {
 
     // Girly Pedia routes using apiResource
     Route::apiResource('/girly-pedia', GirlyPediaController::class);
-
+    Route::post('girly-pedia/{id}/complete', [GirlyPediaController::class, 'markAsCompleted']);
     // Podcast routes using apiResource
 
     Route::apiResource('/podcasts', PodcastController::class);

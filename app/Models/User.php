@@ -5,22 +5,21 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // Import this
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable; // Add HasApiTokens here
+    use HasApiTokens, Notifiable;
 
-    // Include the new fields in the fillable array
     protected $fillable = [
         'name',
         'email',
         'password',
-        'date_of_birth',      // Added date of birth
-        'phone_number',       // Added phone number
-        'institution_code',   // Added institution code (optional)
+        'date_of_birth',
+        'phone_number',
+        'institution_code',
         'guardian_email',
-        'role',    // Added guardian email (optional)
+        'role',
     ];
 
     protected $hidden = [
@@ -28,5 +27,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // You can also define any additional methods or relationships here if needed
+    // Relasi ke GirlyPedia melalui tabel pivot 'girly_pedia_user'
+    public function girlyPediaItems()
+    {
+        return $this->belongsToMany(GirlyPedia::class, 'girly_pedia_user')
+                    ->withPivot('is_completed')
+                    ->withTimestamps();
+    }
 }
