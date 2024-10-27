@@ -2,72 +2,64 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\MenstrualCycle;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\MenstrualCycle;
+use Illuminate\Console\Command;
+use App\Notifications\MenstrualCycleUpdated;
 
 class UpdateMenstrualCycleStatus extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:update-menstrual-cycle-status';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Update menstrual cycle status for all users.';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        // Get the current date
         $currentDate = Carbon::now();
-
-        // Retrieve all users
         $users = User::all();
 
         foreach ($users as $user) {
-            // Retrieve menstrual cycles for the current user
             $cycles = MenstrualCycle::where('user_id', $user->id)->get();
 
             foreach ($cycles as $cycle) {
-                $lastPeriodStart = Carbon::parse($cycle->last_period_start);
-                $lastPeriodFinish = Carbon::parse($cycle->last_period_finish);
-                $updatedAt = Carbon::parse($cycle->updated_at); // Get the updated_at date
+                try {
+                    $lastPeriodStart = $cycle->last_period_start ? Carbon::parse($cycle->last_period_start) : null;
+                    $lastPeriodFinish = $cycle->last_period_finish ? Carbon::parse($cycle->last_period_finish) : null;
+                    $updatedAt = Carbon::parse($cycle->updated_at);
 
-                // Total days of the period
-                $totalDays = $lastPeriodFinish->diffInDays($lastPeriodStart) + 1; // Total days including the finish day
+                    if (!$lastPeriodStart || !$lastPeriodFinish) {
+                        $this->error("Cycle ID: {$cycle->id} has invalid period dates.");
+                        continue; // Skip this cycle if dates are invalid
+                    }
 
-                // Determine if the cycle is completed based on the last_period_finish and updated_at
-                $isCompleted = $currentDate->greaterThan($lastPeriodFinish) && $currentDate->greaterThan($updatedAt);
+                    $totalDays = $lastPeriodFinish->diffInDays($lastPeriodStart) + 1;
+                    $isCompleted = $currentDate->greaterThan($lastPeriodFinish) && $currentDate->greaterThan($updatedAt);
 
-                // Calculate progress
-                $progress = 0;
-                if (!$isCompleted) {
-                    $daysPassed = $updatedAt->diffInDays($lastPeriodStart) + 1; // Days passed including the start day
-                    $progress = $totalDays > 0 ? min(100, round(($daysPassed / $totalDays) * 100)) : 0;
-                } else {
-                    $progress = 100; // Set progress to 100 if completed
+                    $progress = $isCompleted ? 100 : ($totalDays > 0 ? min(100, round(($updatedAt->diffInDays($lastPeriodStart) + 1) / $totalDays * 100)) : 0);
+
+                    // Update the cycle's status and progress in the database
+                    $cycle->is_completed = $isCompleted;
+                    $cycle->progress = $progress;
+                    $cycle->save();
+
+                    // Send the notification
+                    $user->notify(new MenstrualCycleUpdated($cycle));
+
+                    // Log details
+                    $this->info("User ID: {$user->id}");
+                    $this->info("Cycle ID: {$cycle->id}");
+                    $this->info("Progress: {$cycle->progress}%");
+                    $this->info("Status: " . ($cycle->is_completed ? 'Completed' : 'In Progress'));
+                    $this->info("-----------------------------------");
+
+                } catch (\Exception $e) {
+                    $this->error("Error processing user ID: {$user->id}, Cycle ID: {$cycle->id} - " . $e->getMessage());
                 }
-
-                // Update the cycle's status and progress in the database
-                $cycle->is_completed = $isCompleted;
-                $cycle->progress = $progress;
-                $cycle->save(); // Save the changes to the database
-
-                // Log the formatted cycles for the current user
-                $this->info("User ID: {$user->id}, Cycle ID: {$cycle->id}, Progress: {$cycle->progress}%, Completed: " . ($cycle->is_completed ? 'Yes' : 'No'));
             }
         }
 
         $this->info('Menstrual cycle statuses updated successfully for all users.');
     }
+
+
 }

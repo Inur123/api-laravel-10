@@ -14,8 +14,9 @@ class Kernel extends ConsoleKernel
     {
         // Jadwalkan reset setiap hari pada jam 00:00
         $schedule->command('tasks:reset-daily')->dailyAt('00:00');
+        // $schedule->command('menstrualcycle:update-status')->everyMinute();
         $schedule->command('menstrualcycle:update-status')->everyMinute();
-        $schedule->command('menstrualcycle:update-status')->dailyAt('00:00');
+        // $schedule->command('menstrualcycle:update-status')->dailyAt('00:00');
     }
 
 

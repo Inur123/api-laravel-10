@@ -7,6 +7,7 @@ use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\DailyTaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GirlyPediaController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,4 @@ Route::resource('podcasts', PodcastController::class)->middleware('auth');
 Route::resource('challenges', ChallengeController::class);
 
 Route::resource('daily_tasks', DailyTaskController::class);
+Route::get('/notifications', [NotificationController::class, 'showNotifications'])->name('notifications.index');
