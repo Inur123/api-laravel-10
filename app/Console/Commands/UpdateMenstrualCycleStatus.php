@@ -32,18 +32,28 @@ class UpdateMenstrualCycleStatus extends Command
                         continue; // Skip this cycle if dates are invalid
                     }
 
+                    // Update notification_sent based on the day of the month
+                    $cycle->notification_sent = ($currentDate->day === $lastPeriodStart->day) || ($currentDate->day === $lastPeriodFinish->day);
+
+                    // Calculate the total days in the cycle
                     $totalDays = $lastPeriodFinish->diffInDays($lastPeriodStart) + 1;
-                    $isCompleted = $currentDate->greaterThan($lastPeriodFinish) && $currentDate->greaterThan($updatedAt);
 
-                    $progress = $isCompleted ? 100 : ($totalDays > 0 ? min(100, round(($updatedAt->diffInDays($lastPeriodStart) + 1) / $totalDays * 100)) : 0);
+                    // Update is_completed based on the current day matching the last_period_finish day
+                    $isCompleted = $currentDate->day === $lastPeriodFinish->day;
 
-                    // Update the cycle's status and progress in the database
+                    // Calculate progress based on how many days have passed since the start
+                    $daysPassed = $updatedAt->diffInDays($lastPeriodStart) + 1; // +1 to include the start day
+                    $progress = $isCompleted ? 100 : ($totalDays > 0 ? min(100, round(($daysPassed / $totalDays) * 100)) : 0);
+
+                    // Update the cycle's status, progress, and notification_sent in the database
                     $cycle->is_completed = $isCompleted;
                     $cycle->progress = $progress;
                     $cycle->save();
 
-                    // Send the notification
-                    $user->notify(new MenstrualCycleUpdated($cycle));
+                    // Send the notification if it has not been sent
+                    if ($cycle->notification_sent && !$cycle->wasRecentlyCreated) {
+                        $user->notify(new MenstrualCycleUpdated($cycle));
+                    }
 
                     // Log details
                     $this->info("User ID: {$user->id}");
@@ -60,6 +70,4 @@ class UpdateMenstrualCycleStatus extends Command
 
         $this->info('Menstrual cycle statuses updated successfully for all users.');
     }
-
-
 }
